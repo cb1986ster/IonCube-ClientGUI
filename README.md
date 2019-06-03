@@ -5,6 +5,10 @@ To build DEB use `checkinstall --install=no`
 
 Config file ~/.ion.conf:
 > encoder_user=[some_accout]
+>
 > encoder_address=myhost.com
+>
 > encoder_port=7722
+>
 > encodr_program=ioncube_encoder53
+>
