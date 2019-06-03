@@ -1,5 +1,5 @@
 # IonCube-ClientGUI
-If You use IonCube to protect You PHP codes here You have tool to be able to use it from remote server.
+If You use [IonCube] to protect You PHP codes here You have tool to be able to use it from remote server.
 
 To build DEB use `checkinstall --install=no`
 
@@ -12,3 +12,5 @@ Config file ~/.ion.conf:
 >
 > encodr_program=ioncube_encoder53
 >
+
+[IonCube]: https://www.ioncube.com/
