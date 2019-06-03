@@ -1,0 +1,8 @@
+#!/bin/bash
+source ~/.ion.conf
+key=`zenity --file-selection --title="Wybierz klucz publiczny(id_rsa.pub)" --filename=id_rsa.pub`;
+if [ -z "${key}" ] ; then
+	echo "Nie dokonano wyboru";
+	exit 1;
+fi
+cat "${key}" | ssh -T -p ${encoder_port} ${encoder_user}@${encoder_address} 'cat >> ~/.ssh/authorized_keys'

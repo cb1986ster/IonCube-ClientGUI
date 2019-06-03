@@ -1,0 +1,4 @@
+IonCUBE - endcoder client
+Zestaw skryptów pozwalających na wygodne kodowanie katalogów
+ze źródłami PHP na dalekiej maszynie, po przez wykożystanie
+SSH oraz SCP i kilku innych.

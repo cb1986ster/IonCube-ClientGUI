@@ -1,0 +1,70 @@
+#!/bin/bash
+
+source ~/.ion.conf
+
+src_dir=`zenity --file-selection --directory --name="Wybór katalogu do zakodowania"`
+if [ -z "${src_dir}" ] ; then 
+	echo "Nie wybrano źródła!" >&2;
+	exit;
+fi;
+
+dest_file=`zenity --file-selection --save --confirm-overwrite --filename="${src_dir}-ion.tar" --name="Wybierz plik do zapisu"`
+if [ -z "${dest_file}" ] ; then 
+	echo "Nie wybrano celu!" >&2;
+	exit;
+fi;
+zenity --question --text="Kodawać\n\t${src_dir}\ndo\n\t${dest_file}"
+if [ $? -eq 1 ] ; then
+	echo "Anulowano!";
+	exit;
+fi;
+temp_tar=`mktemp /tmp/ionclient.XXXXXX.tar`
+cd "${src_dir}"
+notify-send -i /usr/share/icons/ioncube.png "IonCUBE encoder client" "Katalog szyfrowany\n\t${src_dir}\nZapisuje do\n\t${dest_file}\n\nTworze pakiet do wysyłki"
+tar -c . > ${temp_tar}
+notify-send -i /usr/share/icons/ioncube.png "IonCUBE encoder client" "Wysyłam pakiet(${src_dir})..."
+
+
+# Plik wejściowy
+input_file="${temp_tar}"
+# Plik wynikowy
+output_file="${dest_file}"
+
+# Obcinanie do nazwy pliku
+in=`basename "${input_file}"`
+out=`basename "${output_file}"`
+
+# Zdalny katalog roboczy
+remote_dir=`ssh -p ${encoder_port} ${encoder_user}@${encoder_address} "mktemp -d /tmp/IonENCODER-request.XXXXXX"`
+
+# Kopiowanie pliku
+echo "Transfer na maszyne kodera..." 
+scp -P ${encoder_port} "${input_file}" ${encoder_user}@${encoder_address}:"${remote_dir}/${in}"
+rm -rf ${temp_tar}
+
+# Lista poleceń obróbki
+echo "Kodowanie..."
+ssh -p ${encoder_port} -T ${encoder_user}@${encoder_address} "
+	echo \"Kodowanie na \`uname -no\`\";
+	cd \"${remote_dir}\";
+	mkdir input_d;
+	cd input_d;
+	tar -xf \"../${in}\";
+	cd ..;
+	echo \"Kodowanie właściwe...\";
+	${encodr_program} input_d -o output_d;
+	echo \"Kodowanie zakończone...\";
+	cd output_d;
+	tar -cf \"../${out}\" . ;
+"
+
+# Pobieranie pliku wynikowego
+echo "Odbieranie pliku wynikowego..."
+notify-send -i /usr/share/icons/ioncube.png "IonCUBE encoder client" "Ukończono szyfrowanie. Pobieranie wyniku do \n\t${dest_file}"
+scp -P ${encoder_port} ${encoder_user}@${encoder_address}:"${remote_dir}/${out}" "${output_file}"
+
+# Usuwanie zdalnego katalogu roboczego
+echo "Usuwanie plików roboczych z maszyny kodera..."
+ssh -p ${encoder_port} ${encoder_user}@${encoder_address} "rm -rf ${remote_dir}"
+notify-send -i /usr/share/icons/ioncube.png "IonCUBE encoder client" "Ukończono pobieranie wyniku do \n\t${dest_file}"
+

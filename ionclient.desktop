@@ -1,0 +1,14 @@
+[Desktop Entry]
+X-AppInstall-Package=IonCLIENT
+X-AppInstall-Section=universe
+Type=Application
+Version=1.0
+Name=IonCLIENT
+GenericName=IonCLIENT encoder
+Comment=IonCLIENT encoder
+Icon=/usr/share/icons/ioncube.png
+Exec=ion-client
+Terminal=false
+Categories=GNOME;Network;
+Encoding=UTF-8
+X-Ubuntu-Gettext-Domain=app-install-data

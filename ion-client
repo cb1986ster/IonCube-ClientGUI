@@ -1,0 +1,30 @@
+#!/bin/bash
+encoder_address=
+while [ -z "${encoder_address}" ] ; do
+	source ~/.ion.conf
+	if [ -z "${encoder_address}" ] ; then
+		serv=`zenity --entry --text="Wprowadź adres hosta-kodera" --entry-text="192.168.25.3" --title="IonCLIENT"`
+		user=`zenity --entry --text="Wprowadź użytkownika" --entry-text="ion" --title="IonCLIENT"`
+		port=`zenity --entry --text="Wprowadź port" --entry-text="22" --title="IonCLIENT"`
+		prog=`zenity --entry --text="Wprowadź program kodera" --entry-text="ioncube_encoder53" --title="IonCLIENT"`
+		echo -e "encoder_user=${user}\nencoder_address=${serv}\nencoder_port=${port}\nencodr_program=${prog}" > ~/.ion.conf
+	fi;
+done
+notify-send "IonCUBE encoder client" "${encoder_user}@${encoder_address}:${encoder_port}/${encodr_program}"
+while true ; do
+	sel=`zenity --list --title="IonCLIENT" --text="Wybierz działanie do wykonania" --column="a" --column="desc" 1 "Zaszyfruj katalog" 2 "Dodaj klucz użytkownika" 3 "Usuń klucz użytkownika" --hide-header --hide-column=1`;
+	case "${sel}" in
+		"1")
+			ion-encoder
+		;;
+		"2")
+			ion-key-add
+		;;
+		"3")
+			ion-key-rm
+		;;
+	esac;
+	if [ -z "${sel}" ] ; then
+		break;
+	fi;
+done;
